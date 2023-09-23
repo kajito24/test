@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Game RPG Turn-Based</title>
+    <style>
+      #game-container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80vh; /* Menyesuaikan tinggi viewport */
+      }
+
+      .character-container {
+        margin: 20px; /* Menambahkan jarak vertikal antara karakter utama dan musuh */
+        text-align: center;
+      }
+
+      .character-image {
+        width: 100px;
+      }
+
+      #attack-button {
+        font-size: 20px; /* Ukuran teks tombol yang lebih besar */
+        margin-top: 20px; /* Jarak antara tombol dan karakter utama */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Game RPG Turn-Based</h1>
+    <div id="game-container">
+      <div class="character-container" id="enemy-container">
+        <p>Level: <span id="enemy-level">1</span></p>
+        <img
+          class="character-image"
+          id="enemy-image"
+          src="rook.png"
+          alt="Musuh (Rook)"
+        />
+        <p>Musuh HP: <span id="enemy-hp">100</span></p>
+      </div>
+      <div class="character-container" id="player-container">
+        <p>Level: <span id="player-level">1</span></p>
+        <img
+          class="character-image"
+          id="player-image"
+          src="knight.png"
+          alt="Karakter Utama (Knight)"
+        />
+        <p>Karakter Utama HP: <span id="player-hp">100</span></p>
+      </div>
+      <button id="attack-button" onclick="playerAttack()">Serang</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      let playerHP = 100;
+      let enemyHP = 100;
+      let playerTurn = true;
+      let playerLevel = 1;
+      let enemyLevel = 1;
+
+      // Aturan untuk menghitung damage berdasarkan level
+      function calculateDamage(level) {
+        return 10 + (level - 1) * 3;
+      }
+
+      function playerAttack() {
+        if (!playerTurn) {
+          return;
+        }
+
+        const playerDamage = calculateDamage(playerLevel);
+        enemyHP -= playerDamage;
+        document.getElementById("enemy-hp").textContent = enemyHP;
+
+        if (enemyHP <= 0) {
+          Swal.fire({
+            title: "menang njay",
+            text: "lanjut ga",
+            icon: "success",
+            confirmButtonText: "yoi",
+          });
+          playerLevel++;
+          document.getElementById("player-level").textContent = playerLevel;
+          resetGame();
+        } else {
+          enemyTurn();
+        }
+      }
+
+      function enemyTurn() {
+        playerTurn = false;
+
+        setTimeout(() => {
+          const enemyDamage = calculateDamage(enemyLevel);
+          playerHP -= enemyDamage;
+          document.getElementById("player-hp").textContent = playerHP;
+
+          if (playerHP <= 0) {
+            alert("Anda kalah!");
+            resetGame();
+          } else {
+            playerTurn = true;
+          }
+        }, 1000); // Musuh menunggu 1 detik sebelum menyerang
+      }
+
+      function resetGame() {
+        playerHP = 100;
+        enemyHP = 100;
+        document.getElementById("player-hp").textContent = playerHP;
+        document.getElementById("enemy-hp").textContent = enemyHP;
+        playerTurn = true;
+
+        // Peningkatan level musuh
+        if (playerLevel % 5 === 0) {
+          enemyLevel++;
+          document.getElementById("enemy-level").textContent = enemyLevel;
+        }
+      }
+    </script>
+  </body>
+</html>
